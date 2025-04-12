@@ -1,6 +1,8 @@
 package main;
 
 import entity.Player;
+import tile.Tile;
+import tile.TileManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,14 +13,15 @@ public class GamePanel extends JPanel implements Runnable {
     final int scale = 3; // Scale things by 3 to accommodate modern resolution monitors
 
     public final int tileSize = originalTileSize * scale; // This will be the actual size of the tiles (48X48)
-    final int maxScreenCol = 16;
-    final int maxScreenRow = 12; // This will give us an aspect ratio of 4/3
-    final int screenWidth = tileSize * maxScreenCol; // 48 X 16 = 768px
-    final int screenHeight = tileSize * maxScreenRow; // 48 X 12 = 576px
+    public final int maxScreenCol = 16;
+    public final int maxScreenRow = 12; // This will give us an aspect ratio of 4/3
+    public final int screenWidth = tileSize * maxScreenCol; // 48 X 16 = 768px
+    public final int screenHeight = tileSize * maxScreenRow; // 48 X 12 = 576px
 
     KeyHandler keyH = new KeyHandler();
     Thread gameThread;
     Player player = new Player(this, keyH);
+    TileManager tileM = new TileManager(this);
 
     // FPS frame per second
     int FPS = 60;
@@ -74,9 +77,12 @@ public class GamePanel extends JPanel implements Runnable {
 
 
     public void paintComponent(Graphics g) {
+        // IMPORTANT NOTE: Draw order matters, things will appear on top of each other. if you don't
+        // follow a specific order
         super.paintComponent(g); // the Parent class Jpanel has method called paintComponent
         Graphics2D g2 = (Graphics2D)g; // Ready to draw 2d graphics
 
+        tileM.draw(g2);
         player.draw(g2);
 
         g2.dispose();
