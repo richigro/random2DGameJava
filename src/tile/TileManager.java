@@ -19,7 +19,7 @@ public class TileManager {
         this.gp = gp;
         this.tileTypes = 38; // 38 Because there are 38 types of tiles available right now
         this.tiles = new Tile[tileTypes];
-        mapTileNum = new int[gp.maxScreenRow][gp.maxScreenCol];
+        mapTileNum = new int[gp.maxWorldRow][gp.maxWorldCol];
         getTileImage();
         loadMap("/maps/map001.txt");
     }
@@ -42,12 +42,12 @@ public class TileManager {
                 InputStream is = getClass().getResourceAsStream(filePath);
                 BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
-                for(int row = 0; row < gp.maxScreenRow; row++) {
+                for(int row = 0; row < gp.maxWorldRow; row++) {
                     // read map file line by line
                     String line = br.readLine();
                     String[] tileTypes = line.split(" "); // All tile in each map should be separated by a space
-                    // ex: { 1,0,1,1,0,2,2,2,2,2,0,1,1,0,0,1}
-                    for(int col = 0; col < gp.maxScreenCol; col++) {
+                    // ex: { 1,0,1,1,0,2,2,2,2,2,0,1,1,0,0,1, ......}
+                    for(int col = 0; col < gp.maxWorldCol; col++) {
                         int currTileType = Integer.parseInt(tileTypes[col]);
                         // set the mapTile
                         mapTileNum[row][col] = currTileType;
@@ -60,19 +60,29 @@ public class TileManager {
     }
 
     public void draw(Graphics2D g2) {
-        int x = 0;
-        int y = 0;
 
         for(int row = 0; row < mapTileNum.length; row++) {
             int[] currTileRow = mapTileNum[row];
             for(int col = 0; col < currTileRow.length; col++) {
                 int currTile = mapTileNum[row][col];
-                // draw current tile
-                g2.drawImage(tiles[currTile].image, x, y, gp.tileSize, gp.tileSize, null);
-                x += gp.tileSize;
+
+                int worldX = col * gp.tileSize;
+                int worldY = row * gp.tileSize;
+                int screenY = worldY - gp.player.worldY + gp.player.screenY;
+                int screenX = worldX - gp.player.worldX + gp.player.screenX;
+
+                // create a boundary around the player, so we don't draw tiles
+                // outside of the player's view. This greatly improves performance on big maps
+                if(worldX + gp.tileSize > gp.player.worldX - gp.player.screenX &&
+                        worldX - gp.tileSize < gp.player.worldX + gp.player.screenX &&
+                        worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
+                            worldY - gp.tileSize < gp.player.worldY + gp.player.screenY
+                        ) {
+                    // draw current tile
+                    g2.drawImage(tiles[currTile].image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+                }
+
             }
-            x = 0;
-            y += gp.tileSize;
         }
     }
 }

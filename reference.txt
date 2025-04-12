@@ -1,0 +1,16 @@
+This File helps identify the tile types
+
+tileType              tileName
+0                      void
+1                      grass variant 1
+2                      grass variant 2
+3                      sand variant 1
+4                      grass in middle with a bit of sand on top and left
+5                      grass in middle with a bit of sand on top
+6                      grass in middle with a bit of sand on top and right
+7                      grass in middle with a bit of sand on left
+8                      grass in middle with a bit of sand on right
+9                      grass in middle with a bit of sand on bottom and left
+10                     grass in middle with a bit of sand on bottom
+11                     grass in middle with a bit of sand on bottom and right
+12
